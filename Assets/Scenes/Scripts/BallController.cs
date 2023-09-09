@@ -24,10 +24,10 @@ public class BallController : MonoBehaviour
         paddle = new Dictionary<ScreenEdge, PaddleController>();
         _rb = GetComponent<Rigidbody2D>();
         distanceToEdge = GetComponent<SpriteRenderer>().bounds.max.y - GetComponent<SpriteRenderer>().bounds.center.y;
-        obtainedFieldBounds = GameController.instance.GetFieldBoundaries();
-        foreach(PaddleController paddlePlayer in GameController.instance.getPlayers()){
-            paddle[paddlePlayer.edge] = paddlePlayer;
-        }
+        //obtainedFieldBounds = GameController.instance.GetFieldBoundaries();
+        //foreach(PaddleController paddlePlayer in GameController.instance.getPlayers()){
+         //   paddle[paddlePlayer.edge] = paddlePlayer;
+        //}
     }
 
 
@@ -52,23 +52,10 @@ public class BallController : MonoBehaviour
             directions.x = -directions.x;
         }
 
-        if(newPosition.y - distanceToEdge > obtainedFieldBounds.max.y){
-            Score(ScreenEdge.TOP);
-        }else if(newPosition.y + distanceToEdge < obtainedFieldBounds.min.y){
-            Score(ScreenEdge.BOTTOM);
-        }else if(newPosition.x - distanceToEdge > obtainedFieldBounds.max.x){
-            Score(ScreenEdge.RIGHT);
-        }else if(newPosition.x + distanceToEdge < obtainedFieldBounds.min.x){
-            Score(ScreenEdge.LEFT);
-        }
-
         transform.position = newPosition;
     }
 
-    public void Score(ScreenEdge edge){
-        GameController.instance.UpdateScore(edge, currentOwner);
-        Destroy(gameObject);
-    }
+
 
     public void SetDirection(UnityEngine.Vector2 direction){
         this.directions = direction;

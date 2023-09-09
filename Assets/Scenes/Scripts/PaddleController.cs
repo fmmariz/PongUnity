@@ -21,7 +21,7 @@ public class PaddleController : MonoBehaviour
 
     void Start()
     {
-        fieldBounds = GameController.instance.GetFieldBoundaries();
+        //fieldBounds = GameController.instance.GetFieldBoundaries();
     }
 
     // Update is called once per frame
@@ -107,7 +107,7 @@ public class PaddleController : MonoBehaviour
 
     public void SetVertical(bool vertical){
         isVertical = vertical;
-        Bounds fieldBounds = GameController.instance.GetFieldBoundaries();
+        //Bounds fieldBounds = GameController.instance.GetFieldBoundaries();
         Bounds paddle = GetComponent<SpriteRenderer>().bounds;
 
         if(isVertical){
