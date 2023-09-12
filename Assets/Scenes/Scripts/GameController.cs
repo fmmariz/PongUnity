@@ -25,69 +25,108 @@ public class GameController : MonoBehaviour
     
     [SerializeField] GameObject playableFieldPrefab;
     [SerializeField] GameObject ballPrefab;
-    Dictionary<ScreenEdge, TextMeshProUGUI> edgeScore;
+    [SerializeField] UIController uiController;
     private BallController ballInGame = null;
 
-    private float paddleOffset = 0.25f;
+    private GameStates currentGameState = GameStates.NOT_STARTED;
 
-    int playerCount = 4;
+    int playerCount = 2;
+    List<PlayerController> playerControllers;
+    Dictionary<PlayerController, GameObject> playerMeshDict;
+
 
     void Start()
     {
-        setupScores();
+        playerControllers = new List<PlayerController>();
         spawnPlayers(playerCount);
-        spawnBall();
+        assignScores();
     }
 
     // Update is called once per frame
     void Update()
     {   
-    }
+        if(Input.GetKey(KeyCode.Space)){
+            currentGameState = GameStates.ONGOING;
+        }
+        if(currentGameState == GameStates.ONGOING){
+            if(ballInGame == null){
+                ballInGame = SpawnBall();
+            }
 
-    void setupScores(){
-        // foreach(TextMeshProUGUI textMesh in textMeshList){
-        //     textMesh.gameObject.SetActive(false);
-        // }
-        // foreach(PaddleController paddle in players){
-        //     edgeScore[paddle.edge].gameObject.SetActive(true);
-        // }
-    }
-
-    public void UpdateScore(ScreenEdge scoredEdge, PaddleController shotOwner){
-        // if(players.Count == 2){
-        //     players.Find(player => {return player.edge != scoredEdge;}).AddScore();
-        // }else{
-        //     PaddleController hitPlayer = players.Find(player => {return player.edge == scoredEdge;});
-        //     if(hitPlayer == shotOwner)
-        //     {
-        //         hitPlayer.RemoveScore();
-        //     }else{
-        //         players.Find(player => {return player.edge == shotOwner.edge;}).AddScore();
-        //     }
-        // }
-
-        // foreach(PaddleController paddle in players){
-        //     edgeScore[paddle.edge].text = paddle.GetScore().ToString();
-        // }
+            if(Input.GetKey(KeyCode.R)){
+                Destroy(ballInGame.gameObject);
+            }
+        }
     }
 
     void spawnPlayers(int number){
         if(number == 2){
-            spawnPlayer(true,0);
-            spawnPlayer(false,180);
+            playerControllers.Add(spawnPlayer(true,0, "P1"));
+            playerControllers.Add(spawnPlayer(false,180, "P2"));
         }else if(number == 4){
             int baseAngle = 45;
             int spinAngle = 90;
-            spawnPlayer(true, baseAngle);
-            spawnPlayer(false, baseAngle + spinAngle);
-            spawnPlayer(false, baseAngle + 2*spinAngle);
-            spawnPlayer(false, baseAngle + 3*spinAngle);
+            playerControllers.Add(spawnPlayer(true, baseAngle, "P1"));
+            playerControllers.Add(spawnPlayer(false, baseAngle + spinAngle, "P2"));
+            playerControllers.Add(spawnPlayer(false, baseAngle + 2*spinAngle, "P3"));
+            playerControllers.Add(spawnPlayer(false, baseAngle + 3*spinAngle, "P4"));
         }
     }
 
-    void spawnPlayer(bool isPlayable, int angle){
+    void assignScores()
+    {
+        playerMeshDict = new Dictionary<PlayerController, GameObject>();
+        foreach(PlayerController player in playerControllers)
+        {
+            playerMeshDict[player] = uiController.CreateNewScore(player);
+        }
+        UpdateScores();
+    }
+
+    public void ApplyScore(PlayerController scored, PlayerController scorer)
+    {
+        if(scored == scorer || scorer == null){
+           if(playerControllers.Count == 4){
+            scored.RemoveScore();
+           }else{
+            foreach(PlayerController pc in playerControllers){
+                if(pc != scored){
+                    Debug.Log("Added Score");
+                    pc.AddScore();
+                }
+            }
+           }
+        }else{
+            Debug.Log("Added Score");
+            scorer.AddScore();
+        }
+        UpdateScores();
+    }
+
+    void UpdateScores(){
+        int score;
+        string currentScoreHolder = null;
+        foreach(PlayerController pc in playerMeshDict.Keys)
+        {
+            score = pc.GetScore();
+            if(score == 3){ currentScoreHolder = pc.playerName; }
+            playerMeshDict[pc].GetComponent<TextMeshProUGUI>().text = score.ToString();
+        }
+        if(currentScoreHolder != null){
+            currentGameState = GameStates.ENDED;
+            ShowWinner(currentScoreHolder+" HAS WON!");
+        }
+    }
+
+    void ShowWinner(string message){
+        uiController.DisplayWinnerMessage(message);
+    }
+    
+    PlayerController spawnPlayer(bool isPlayable, int angle, string name){
         float size;
         GameObject newPlayerField = Instantiate(playableFieldPrefab, new Vector3(0,0,0), Quaternion.Euler(new Vector3(0,0,0)));
+        PlayerController controller = newPlayerField.GetComponent<PlayerController>();
+
         if(playerCount == 2){
             size = 50f;
             newPlayerField.transform.localScale = new Vector3(size, size,1f);
@@ -95,22 +134,28 @@ public class GameController : MonoBehaviour
         }else{
             size = 15f;
             newPlayerField.transform.localScale = new Vector3(size, size,1f);
-            PlayerController controller = newPlayerField.GetComponent<PlayerController>();
             Bounds field = controller.GetPlayerFieldBounds();
             Vector3 topRight = field.max;
             Vector3 topLeft = new Vector3(field.min.x, topRight.y);
             newPlayerField.transform.rotation = Quaternion.Euler(new Vector3(0,0, angle));
             newPlayerField.transform.position = -newPlayerField.transform.right * (Vector3.Distance(topLeft,topRight)/2);
-        } 
+        }
+        controller.playerName = name;
+        return controller;
     }
 
-    BallController spawnBall(){
+    BallController SpawnBall(){
         if(ballInGame != null) return ballInGame;
-        Debug.Log("Aie!");
-        GameObject newBall = Instantiate(ballPrefab, getBallSpawningZone(), Quaternion.identity);
+        float balltilt = 0;
+        if(playerCount == 4) balltilt = 45; 
+        GameObject newBall = Instantiate(ballPrefab, getBallSpawningZone(), Quaternion.Euler(new Vector3(0,0,balltilt)));
         BallController ballController = newBall.GetComponent<BallController>();
-        ballController.SetDirection(new Vector2(Random.Range(0,2)*2-1,Random.Range(-1,1)).normalized);
-        ballController.SetSpeed(6f);
+        Quaternion directionQ = Quaternion.Euler(0f,0f, Random.Range(0,360));
+        Vector3 directionV = directionQ * Vector3.up;
+        newBall.GetComponent<Rigidbody2D>().velocity = directionV*5f;
+        // ballController.SetDirection(directionV);
+        
+        // ballController.SetSpeed(5f);
         return ballController;
     }
 

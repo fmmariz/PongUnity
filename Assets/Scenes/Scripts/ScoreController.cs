@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ScoreController : MonoBehaviour
 {
+    [SerializeField] public PlayerController PlayerController;
     // Start is called before the first frame update
     void Start()
     {
