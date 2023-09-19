@@ -20,13 +20,14 @@ public class BallController : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D other) {
-        if(other.gameObject.CompareTag("wall") || other.gameObject.CompareTag("paddle"))
+        if(other.gameObject.CompareTag("wall")
+            || other.gameObject.CompareTag("paddle")
+            || other.gameObject.CompareTag("obstacle"))
         {
             ContactPoint2D hit = other.GetContact(0);
             _rb.velocity = Vector2.Reflect(_rb.velocity, hit.normal);
             if(other.gameObject.CompareTag("paddle")){
                 currentOwner = other.gameObject.transform.parent.parent.GetComponent<PlayerController>();
-                Debug.Log("Ball is in ownership of "+currentOwner.gameObject.name);
             }
         }else if(other.gameObject.GetComponent<ScoreController>()){
             PlayerController hit = other.gameObject.GetComponent<ScoreController>().PlayerController;

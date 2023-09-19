@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 213937838084425052}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00182, y: -0.099500276, z: 0}
-  m_LocalScale: {x: 1.02, y: 0.02, z: -1}
+  m_LocalPosition: {x: 0, y: -0.10300026, z: 0}
+  m_LocalScale: {x: 1, y: 0.05, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6634190443588302083}
@@ -156,7 +156,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!1 &2058398633235771478
 GameObject:
@@ -372,6 +372,7 @@ GameObject:
   - component: {fileID: 5396820968380001941}
   - component: {fileID: 3584574847810295325}
   - component: {fileID: 7704980134019302037}
+  - component: {fileID: 7623327511517161604}
   m_Layer: 0
   m_Name: paddle
   m_TagString: paddle
@@ -388,8 +389,8 @@ Transform:
   m_GameObject: {fileID: 6736986058950301477}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0935, y: 0, z: 0}
-  m_LocalScale: {x: 0.02, y: 0.2, z: -1}
+  m_LocalPosition: {x: -0.088, y: 0, z: 0}
+  m_LocalScale: {x: 0.04, y: 0.2, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6218685707768035228}
@@ -458,10 +459,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 1
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 9999
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_AngularDrag: 0
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -471,8 +472,8 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
+  m_CollisionDetection: 1
+  m_Constraints: 4
 --- !u!61 &7704980134019302037
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -518,6 +519,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.2, y: 0.2}
   m_EdgeRadius: 0
+--- !u!114 &7623327511517161604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6736986058950301477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4dc96a4a199dae4cb750608b980119c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7004996394175035261
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,6 +541,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2093842350949943003}
   - component: {fileID: 4337118265406096780}
+  - component: {fileID: 7972221262242345604}
   m_Layer: 0
   m_Name: playableSection
   m_TagString: Untagged
@@ -564,9 +578,112 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   field: {fileID: 4402386066826063847}
-  scoreBar: {fileID: 0}
   scoreSpot: {fileID: 2058398633235771478}
+  paddle: {fileID: 6736986058950301477}
+  scoreBorder: {fileID: 8488366198081137111}
+  topBorder: {fileID: 7045745264741795307}
+  bottomBorder: {fileID: 213937838084425052}
+  paddleController: {fileID: 7623327511517161604}
+  up:
+    m_Name: Up
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1d249e87-a0ee-4eb4-bec1-1702e1219dff
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: e6134775-ab2a-4a0b-bf15-93dc4bd64c90
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Up
+      m_Flags: 0
+    - m_Name: 
+      m_Id: ea7ea3ac-4f3b-4dbc-9322-1b7906ef2b32
+      m_Path: <Keyboard>/upArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Up
+      m_Flags: 0
+    m_Flags: 0
+  down:
+    m_Name: Down
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: fd082519-1603-4377-b47b-97b7156a62a4
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: 
+      m_Id: b18736e1-11a4-4ef7-8a4e-e0e27637bef7
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Down
+      m_Flags: 0
+    - m_Name: 
+      m_Id: 839ffa90-92bf-44b5-8fb1-1e59a7438865
+      m_Path: <Keyboard>/downArrow
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Down
+      m_Flags: 0
+    m_Flags: 0
+  autoplay: 1
+  upright: 0
   playerName: 
+  isVertical: 0
+--- !u!114 &7972221262242345604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7004996394175035261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: faa6430f459aa244aa8903f53434adaf, type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4337118265406096780}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Move
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4b06f2c0-697b-4db8-9526-bca9c64e0c84
+    m_ActionName: PlayerMovement/Movement[/Keyboard/w,/Keyboard/s,/Keyboard/upArrow,/Keyboard/downArrow]
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: PlayerMovement
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1 &7045745264741795307
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,8 +712,8 @@ Transform:
   m_GameObject: {fileID: 7045745264741795307}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00182, y: 0.099500276, z: 0}
-  m_LocalScale: {x: 1.02, y: 0.02, z: -1}
+  m_LocalPosition: {x: 0, y: 0.103000544, z: 0}
+  m_LocalScale: {x: 1, y: 0.05, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6634190443588302083}
@@ -678,7 +795,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!61 &2824497905548919027
 BoxCollider2D:
@@ -789,7 +906,7 @@ Transform:
   m_GameObject: {fileID: 8488366198081137111}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -0.099500015, y: 0, z: 0}
+  m_LocalPosition: {x: -0.0995, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.005, z: -1}
   m_ConstrainProportionsScale: 0
   m_Children: []
