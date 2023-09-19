@@ -33,6 +33,13 @@ public class BallController : MonoBehaviour
             PlayerController hit = other.gameObject.GetComponent<ScoreController>().PlayerController;
             ApplyScore(hit);
             Destroy(gameObject);
+        }else if(other.gameObject.CompareTag("pUpFreeze")){
+            GameController.instance.PlayerObtainedPowerup(currentOwner, StatusEffects.StatusTag.FREEZE);
+            GameController.instance.RemovePowerUp(other.gameObject);
+        }else if(other.gameObject.CompareTag("pUpFrenzy")){
+            GameController.instance.PlayerObtainedPowerup(currentOwner, StatusEffects.StatusTag.FRENZY);
+            GameController.instance.RemovePowerUp(other.gameObject);
+
         }
     }
 

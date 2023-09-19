@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     private int score = 0;
 
     public bool isVertical = false;
+    private float _paddleBaseSpeed = 0;
+    private float _paddleFinalSpeed = 0;
 
     float moveValues = 0;
 
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         score = 0;
+        _statusEffects = new List<StatusEffects>();
     }
 
     // Update is called once per frame
@@ -90,11 +93,9 @@ public class PlayerController : MonoBehaviour
                 ballHeight = GameController.instance.getCurrentBall().transform.position.y;
                 if (height > ballHeight){ 
                     moveValues = 1; 
-                    Debug.Log("Hello!");
                     }
                 if (height < ballHeight){ 
                     moveValues = -1; 
-                    Debug.Log("Bye!");
                     }
                 paddleController.Move(new Vector2(0,1));
                 break;
@@ -149,4 +150,42 @@ public class PlayerController : MonoBehaviour
         return playerIndex;
     }
 
+    private List<StatusEffects> _statusEffects;
+
+    public void AddStatus(StatusEffects status){
+        _statusEffects.Add(status);
+    }
+
+    public void RemoveStatus(StatusEffects status){
+        _statusEffects.Remove(status);
+    }
+    public void RefreshStatuses(){
+        float paddleSpeed = _paddleBaseSpeed;
+        Color finalColor = new Color(0,0,0);
+        foreach(StatusEffects status in _statusEffects){
+            paddleSpeed *= status.GetSpeedModifier();
+            finalColor += status.GetColor();
+        }
+        SetPaddleSpeed(paddleSpeed);
+        if(_statusEffects.Count >0){
+            finalColor /= _statusEffects.Count;
+        }else{
+            finalColor = Color.white;
+        }
+        paddleController.SetPaddleColor(finalColor);
+    }
+
+    public void SetPaddleSpeed(float paddleFinalSpeed){
+        _paddleFinalSpeed = paddleFinalSpeed;
+        paddleController.SetPaddleSpeed(_paddleFinalSpeed);
+    }
+
+    public float GetPaddleSpeed(){
+        return _paddleFinalSpeed;
+    }
+
+    public void SetPaddleBaseSpeed(float paddleBaseSpeed){
+        _paddleBaseSpeed = paddleBaseSpeed;
+        SetPaddleSpeed(_paddleBaseSpeed);
+    }
 }

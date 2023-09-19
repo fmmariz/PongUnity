@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PaddleController : MonoBehaviour
 {
-    private float paddleVel = 5f;
+    private float _paddleSpeed;
     private Vector2 moveValue;
 
     private void FixedUpdate(){
@@ -16,7 +16,7 @@ public class PaddleController : MonoBehaviour
         if(collidingWithBotwall && tilted.y <=0){
             tilted.y = 0;
         }
-        tilted = paddleVel * Time.fixedDeltaTime * tilted;
+        tilted = _paddleSpeed * Time.fixedDeltaTime * tilted;
         tilted = Quaternion.Euler(0,0,transform.eulerAngles.z)*tilted;
         GetComponent<Rigidbody2D>().MovePosition(GetComponent<Rigidbody2D>().position + (Vector2)tilted);
     }
@@ -44,5 +44,13 @@ public class PaddleController : MonoBehaviour
          {
             collidingWithBotwall = false;
          }
+    }
+
+    public void SetPaddleSpeed(float paddleSpeed){
+        _paddleSpeed = paddleSpeed;
+    }
+
+    public void SetPaddleColor(Color color){
+        GetComponent<SpriteRenderer>().color = color;
     }
 }

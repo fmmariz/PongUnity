@@ -21,7 +21,6 @@ public class PowerUpController : MonoBehaviour
     public GameObject SpawnPowerUp(GameObject parent, Vector3 coordinate){
         if(_powerUpsInGame.Count >= 2) return null;
         GameObject chosenPrefab = _powerUpPrefabs[Random.Range(0, _powerUpPrefabs.Count)];
-        Debug.Log("Spawned a "+chosenPrefab.name+".");
             GameObject newPowerUp = Instantiate(
                 chosenPrefab,
                 coordinate,

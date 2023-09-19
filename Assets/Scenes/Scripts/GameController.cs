@@ -49,9 +49,12 @@ public class GameController : MonoBehaviour
     // CUSTOMIZABLE
 
     #region Modifiable Info (add to the UI eventually)
-    int playerCount = 2;
+    int playerCount = 4;
+    float paddleSpeed = 8f;
     float widthScalingPlayer = 1f;
     float heightScalingPlayer = 1f;
+    int numberOfObstacles = 3;
+
     #endregion
 
 
@@ -84,11 +87,53 @@ public class GameController : MonoBehaviour
 
         _powerUpTimerElapsed += Time.deltaTime;
         if(_powerUpTimerElapsed >= _powerUpTimer){
-            Debug.Log("Put a powerup");
             SpawnPowerUp();
             _powerUpTimerElapsed = 0f;
         }
     }
+
+    #region PowerUp Management
+
+    public void PlayerObtainedPowerup(PlayerController pController, StatusEffects.StatusTag pUpTag){
+        List<PlayerController> affectedEnemies = GetAllBut(pController);
+        switch(pUpTag){
+            case StatusEffects.StatusTag.FREEZE:
+                foreach(PlayerController p in affectedEnemies){
+                    ApplyStatusEffect<FrozenStatusEffects>(p);
+                }
+            break;
+            case StatusEffects.StatusTag.FRENZY:
+                foreach(PlayerController p in affectedEnemies){
+                    ApplyStatusEffect<FrenzyStatusEffects>(p);
+                }
+            break;
+        }
+    }
+
+    public void ApplyStatusEffect<T>(PlayerController pc) where T : StatusEffects{
+        StatusEffects oldStatus = pc.GetComponent<T>();
+        if(oldStatus == null){
+            pc.transform.AddComponent<T>();
+            StatusEffects f = pc.transform.GetComponent<T>();
+            pc.AddStatus(f);
+            f.SetAfflictedPlayer(pc);
+        }else{
+            oldStatus.RefreshDuration();
+        }
+    }
+
+    public void RemovePowerUp(GameObject gameObject){
+        _powerUpController.RemoveObject(gameObject);
+    }
+    
+
+    private List<PlayerController> GetAllBut(PlayerController pController){
+        List<PlayerController> allEnemies = playerControllers;
+        allEnemies.Remove(pController);
+        return allEnemies;
+    }
+
+    #endregion
 
     #region Scoring and Display Winner
     void AssignScores()
@@ -109,13 +154,11 @@ public class GameController : MonoBehaviour
            }else{
             foreach(PlayerController pc in playerControllers){
                 if(pc != scored){
-                    Debug.Log("Added Score");
                     pc.AddScore();
                 }
             }
            }
         }else{
-            Debug.Log("Added Score");
             scorer.AddScore();
         }
         UpdateScores();
@@ -141,8 +184,6 @@ public class GameController : MonoBehaviour
     }
 
     #endregion 
-
-
 
     #region Spawning
     void SpawnPlayers(int number,float wScale, float hScale){
@@ -181,9 +222,10 @@ public class GameController : MonoBehaviour
             newPlayerField.transform.rotation = Quaternion.Euler(new Vector3(0, 0, angle));
             newPlayerField.transform.position += -newPlayerField.transform.right * (Vector3.Distance(bottomLeft, topLeft) / 2);
         }
-
+    
         newPlayerField.transform.parent = this.gameObject.transform;
         controller.playerIndex = name;
+        controller.SetPaddleBaseSpeed(paddleSpeed);
         return controller;
     }
 
@@ -200,20 +242,42 @@ public class GameController : MonoBehaviour
         return ballController;
     }
 
-    void SpawnObstacles(){
-        GameObject _paddleObstacle = _obstacleController.SpawnPaddleObstacle(gameObject, new Vector3(3, 3, 0), 0);
-        _paddleObstacle.AddComponent<SpinningObstacleController>();
-        _paddleObstacle.GetComponent<SpinningObstacleController>().SetRotationSpeed(3f);
+    private void SpawnObstacles(){
+        for(int i = 0; i<numberOfObstacles; i++){
+            GameObject newObstacle = _obstacleController.SpawnRandomObstacle(this.gameObject,
+            GetRandomPointInField(0.5f),Random.Range(0,360), Random.Range(0.3f,0.7f));
+            ApplyRandomObstacleEffect(newObstacle);
+        }
+    }
 
-        GameObject _squareObstacle = _obstacleController.SpawnSquareObstacle(gameObject, new Vector3(3, -3, 0), 0);
-        _squareObstacle.AddComponent<MovingStopObstacleController>();
-        _squareObstacle.GetComponent<MovingStopObstacleController>()
-        .SetMovementPattern(
-            _squareObstacle.transform.position + new Vector3(-6,6,0), 3f, 3f);
-
-        GameObject _circleObstacle = _obstacleController.SpawnCircleObstacle(gameObject, new Vector3(-3,-3, 0));
-        _circleObstacle.AddComponent<OscillatingMovementController>();
-        _circleObstacle.GetComponent<OscillatingMovementController>().SetOscillation(3f, new Vector3(100,100,0));
+    enum ObstacleEffect{
+        NONE,
+        MOVE,
+        OSCILLATING,
+        SPIN
+    }
+    private void ApplyRandomObstacleEffect(GameObject gO){
+        System.Array values = ObstacleEffect.GetValues(typeof(ObstacleEffect));
+        System.Random random = new System.Random();
+        ObstacleEffect randomObstacleEffect = (ObstacleEffect)values.GetValue(random.Next(values.Length));
+        switch(randomObstacleEffect){
+            case ObstacleEffect.NONE:
+            break;
+            case ObstacleEffect.MOVE:
+                gO.AddComponent<MovingStopObstacleController>();
+                gO.GetComponent<MovingStopObstacleController>()
+                .SetMovementPattern(GetRandomPointInField(0.6f),Random.Range(1f,5f),Random.Range(5f,10f));
+            break;
+            case ObstacleEffect.OSCILLATING:
+                gO.AddComponent<OscillatingMovementController>();
+                gO.GetComponent<OscillatingMovementController>()
+                .SetOscillation(Random.Range(3f,10f), new Vector3(Random.Range(0f,300f),Random.Range(0f,300f),0));
+            break;
+            case ObstacleEffect.SPIN:
+                gO.AddComponent<SpinningObstacleController>();
+                gO.GetComponent<SpinningObstacleController>().SetRotationSpeed(Random.Range(3f,10f));
+            break;
+        }
     }
 
     void SpawnPowerUp(){
@@ -284,7 +348,6 @@ public class GameController : MonoBehaviour
         Vector2 randomWithinCircle = Random.insideUnitCircle;
         Vector3 randomPos = new Vector3(randomWithinCircle.x, randomWithinCircle.y, 0);
         Debug.Log(randomPos);
-        Debug.Log(allowedRadius);
         Vector3 chosenPoint = center + randomPos * allowedRadius;
         return chosenPoint;
     }

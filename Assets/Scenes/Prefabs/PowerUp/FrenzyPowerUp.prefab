@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3998256699551811362}
   m_Layer: 0
   m_Name: FrenzyPowerUp
-  m_TagString: powerup
+  m_TagString: pUpFrenzy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 9cf24710312dcf34c8557de7b0d9b5ec, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -118,7 +118,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.09897375}
+  m_Offset: {x: 0.10860157, y: 0.31617546}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -129,7 +129,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5.22, y: 5.0422297}
+  m_Size: {x: 11.518877, y: 20.787071}
   m_EdgeRadius: 0
 --- !u!50 &3998256699551811362
 Rigidbody2D:

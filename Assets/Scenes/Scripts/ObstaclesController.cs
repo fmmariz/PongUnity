@@ -33,6 +33,24 @@ public class ObstaclesController : MonoBehaviour
             return newObstacle;
     }
 
+    public GameObject SpawnRandomObstacle(
+        GameObject parent, Vector3 coordinates, float angle, float scale){
+        List<GameObject> prefabList = new List<GameObject>{
+            _circleObstacle,
+            _squareObstacle,
+            _paddleObstacle};
+        GameObject chosenPrefab =  prefabList[Random.Range(0, prefabList.Count)];
+
+        GameObject newObstacle = Instantiate(
+            chosenPrefab,
+            coordinates,
+            Quaternion.Euler(0,0,angle),
+            parent.transform);
+        newObstacle.transform.localScale = newObstacle.transform.localScale * _SCALEOFFSET * scale;
+        _obstaclesInPlay.Add(newObstacle);
+        return newObstacle;
+    }
+
     public GameObject SpawnSquareObstacle(GameObject parent, Vector3 coordinates, float angle){
         return SpawnObstacle(parent, _squareObstacle, coordinates, angle);
     }
